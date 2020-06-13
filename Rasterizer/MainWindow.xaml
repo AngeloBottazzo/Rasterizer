@@ -1,0 +1,244 @@
+﻿<Window x:Class="Rasterizer.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Rasterizer"
+        xmlns:xcwt="clr-namespace:Xceed.Wpf.Toolkit;assembly=Xceed.Wpf.Toolkit"
+        mc:Ignorable="d"
+        x:Name="Finestra"
+        Title="MainWindow" d:DesignWidth="1377" d:DesignHeight="572.5">
+    <Window.Resources>
+        <local:GradiGradienti x:Key="ConvertitoreGradiGradienti"/>
+        <Style x:Key="PulsanteAzione" TargetType="Button">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="16"/>
+            <Setter Property="Height" Value="24"/>
+            <Setter Property="Width" Value="24"/>
+            <Setter Property="SnapsToDevicePixels" Value="True"/>
+        </Style>
+        <HierarchicalDataTemplate x:Key="TemplateComponente" DataType="{x:Type local:Componente}" ItemsSource="{Binding Figli}">
+            <DockPanel Width="160">
+                <Button x:Name="BtnEliminaComponente" Content="" Style="{StaticResource PulsanteAzione}" DockPanel.Dock="Right" Click="BtnEliminaNodo_Click" Margin="5,5,5,5"/>
+                <Button x:Name="BtnAggiungiComponente" Content="" Style="{StaticResource PulsanteAzione}" DockPanel.Dock="Right"  Margin="5,5,0,5" Click="BtnAggiungiComponente_Click"/>
+                <TextBlock Text="{Binding Nome}" VerticalAlignment="Center"/>
+            </DockPanel>
+        </HierarchicalDataTemplate>
+
+        <DataTemplate DataType="{x:Type local:Vettore}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <TextBlock FontWeight="Bold" Text="{Binding Nome}" Grid.Column="0" VerticalAlignment="Center"/>
+                <TextBlock Text="X: " Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                <xcwt:DoubleUpDown Value="{Binding X}" FormatString="F2" Grid.Column="2" MinWidth="60"/>
+                <TextBlock Text="Y: " Grid.Column="3" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                <xcwt:DoubleUpDown Value="{Binding Y}" FormatString="F2" Grid.Column="4" MinWidth="60"/>
+                <TextBlock Text="Z: " Grid.Column="5" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                <xcwt:DoubleUpDown Value="{Binding Z}" FormatString="F2" Grid.Column="6" MinWidth="60"/>
+                <Button x:Name="BtnEliminaVertice" Content="" Style="{StaticResource PulsanteAzione}" Grid.Column="7" Margin="5,0,0,0" Click="BtnEliminaNodo_Click"/>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type local:Faccia}">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="0.8*"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="1*"/>
+                    <ColumnDefinition Width="1*"/>
+                </Grid.ColumnDefinitions>
+                <TextBlock FontWeight="Bold" Text="{Binding Nome}" Grid.Column="0" VerticalAlignment="Center"/>
+                <ComboBox SelectedItem="{Binding Vertici[0]}" ItemsSource="{Binding ElementName=Albero, Path=SelectedItem.Vertici}" DisplayMemberPath="Nome" Grid.Column="1" Margin="5,0,0,0" Width="50"/>
+                <ComboBox SelectedItem="{Binding Vertici[1]}" ItemsSource="{Binding ElementName=Albero, Path=SelectedItem.Vertici}" DisplayMemberPath="Nome" Grid.Column="2" Margin="5,0,0,0" Width="50"/>
+                <ComboBox SelectedItem="{Binding Vertici[2]}" ItemsSource="{Binding ElementName=Albero, Path=SelectedItem.Vertici}" DisplayMemberPath="Nome" Grid.Column="3" Margin="5,0,5,0" Width="50"/>
+                <xcwt:ColorPicker SelectedColor="{Binding Colore}" Grid.Column="4" UsingAlphaChannel="False" MaxWidth="60"/>
+                <Button x:Name="BtnEliminaVertice" Content="" Style="{StaticResource PulsanteAzione}" Grid.Column="5" Margin="5,0,0,0" Click="BtnEliminaNodo_Click"/>
+            </Grid>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type local:Componente}">
+            <StackPanel Margin="0,0,0,5">
+                <TextBlock Text="Nome" Margin="0,10,0,0"/>
+                <TextBox Text="{Binding Nome}" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                <TextBlock Text="Posizione" Margin="0,10,0,5"/>
+                <Grid DataContext="{Binding Posizione}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="X: " Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding X}" FormatString="F2" Grid.Column="1" MinWidth="60"/>
+                    <TextBlock Text="Y: " Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Y}" FormatString="F2" Grid.Column="3" MinWidth="60"/>
+                    <TextBlock Text="Z: " Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Z}" FormatString="F2" Grid.Column="5" MinWidth="60"/>
+                </Grid>
+                <TextBlock Text="Rotazione (°)" Margin="0,10,0,5"/>
+                <Grid DataContext="{Binding Rotazione}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="X: " Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding X, Converter={StaticResource ConvertitoreGradiGradienti}}" FormatString="F2" Grid.Column="1" MinWidth="60"/>
+                    <TextBlock Text="Y: " Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Y, Converter={StaticResource ConvertitoreGradiGradienti}}" FormatString="F2" Grid.Column="3" MinWidth="60"/>
+                    <TextBlock Text="Z: " Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Z, Converter={StaticResource ConvertitoreGradiGradienti}}" FormatString="F2" Grid.Column="5" MinWidth="60"/>
+                </Grid>
+                <TextBlock Text="Scala" Margin="0,10,0,5"/>
+                <Grid DataContext="{Binding Scala}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="X: " Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding X}" FormatString="F2" Grid.Column="1" MinWidth="60"/>
+                    <TextBlock Text="Y: " Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Y}" FormatString="F2" Grid.Column="3" MinWidth="60"/>
+                    <TextBlock Text="Z: " Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Z}" FormatString="F2" Grid.Column="5" MinWidth="60"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+
+        <DataTemplate DataType="{x:Type local:Camera}">
+            <StackPanel Margin="0,0,0,5">
+                <TextBlock Text="Nome" Margin="0,10,0,0"/>
+                <TextBox Text="{Binding Nome}" HorizontalAlignment="Stretch" TextWrapping="Wrap"/>
+                <TextBlock Text="Posizione" Margin="0,10,0,5"/>
+                <Grid DataContext="{Binding Posizione}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="X: " Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding X}" FormatString="F2" Grid.Column="1" MinWidth="60"/>
+                    <TextBlock Text="Y: " Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Y}" FormatString="F2" Grid.Column="3" MinWidth="60"/>
+                    <TextBlock Text="Z: " Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Z}" FormatString="F2" Grid.Column="5" MinWidth="60"/>
+                </Grid>
+                <TextBlock Text="Rotazione (°)" Margin="0,10,0,5"/>
+                <Grid DataContext="{Binding Rotazione}">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="X: " Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding X, Converter={StaticResource ConvertitoreGradiGradienti}}" FormatString="F2" Grid.Column="1" MinWidth="60"/>
+                    <TextBlock Text="Y: " Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Y, Converter={StaticResource ConvertitoreGradiGradienti}}" FormatString="F2" Grid.Column="3" MinWidth="60"/>
+                    <TextBlock Text="Z: " Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Z, Converter={StaticResource ConvertitoreGradiGradienti}}" FormatString="F2" Grid.Column="5" MinWidth="60"/>
+                </Grid>
+                <TextBlock Text="Impostazioni" Margin="0,10,0,5"/>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                        <ColumnDefinition/>
+                    </Grid.ColumnDefinitions>
+                    <TextBlock Text="FOV°: " Grid.Column="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:DoubleUpDown Value="{Binding Path=FOV, Converter={StaticResource ConvertitoreGradiGradienti}}" FormatString="F2" Grid.Column="1" MinWidth="60"/>
+                    <TextBlock Text="Rx: " Grid.Column="2" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:IntegerUpDown Value="{Binding Rx}" Grid.Column="3" MinWidth="60"/>
+                    <TextBlock Text="Ry: " Grid.Column="4" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="5,0,0,0"/>
+                    <xcwt:IntegerUpDown Value="{Binding Ry}" Grid.Column="5" MinWidth="60"/>
+                </Grid>
+            </StackPanel>
+        </DataTemplate>
+
+        <Style x:Key="Titolo" TargetType="TextBlock">
+            <Setter Property="Margin" Value="0,0,0,5"/>
+            <Setter Property="FontWeight" Value="Bold"/>
+        </Style>
+
+        <RoutedUICommand x:Key="ComandoAggiorna" Text="Aggiorna immagine" />
+    </Window.Resources>
+    <Window.CommandBindings>
+        <CommandBinding Command="{StaticResource ComandoAggiorna}" Executed="BtnRenderizza_Click" />
+    </Window.CommandBindings>
+
+    <Window.InputBindings>
+        <KeyBinding Key="F5" Command="{StaticResource ComandoAggiorna}" />
+    </Window.InputBindings>
+    
+    <DockPanel Margin="10,10,10,10">
+        <StackPanel Orientation="Horizontal" DockPanel.Dock="Top" Margin="0,0,0,10">
+            <Button x:Name="BtnCaricaScena" Content="Carica scena" Padding="5,0,5,0" Margin="0,0,5,0" Width="80" Click="BtnCaricaScena_Click"/>
+            <Button x:Name="BtnSalvaScena" Content="Salva scena" Padding="5,0,5,0" Margin="0,0,10,0" Width="80" Click="BtnSalvaScena_Click"/>
+            <Button x:Name="BtnSalvaComponente" Content="Salva componente" Padding="5,0,5,0" Margin="0,0,5,0" Width="120" Click="BtnSalvaComponente_Click"/>
+            <Button x:Name="BtnCaricaComponente" Content="Carica componente" Padding="5,0,5,0" Margin="0,0,5,0" Width="120" Click="BtnCaricaComponente_Click"/>
+        </StackPanel>
+        <DockPanel DockPanel.Dock="Left" Margin="0,0,5,0">
+            <Button x:Name="BtnCreaComponente" Content="Crea componente" Padding="5,5,5,5" DockPanel.Dock="Bottom" Margin="0,5,0,0" Click="BtnCreaComponente_Click"/>
+            <Button x:Name="BtnCreaCamera" Content="Crea camera" Padding="5,5,5,5" DockPanel.Dock="Bottom" Margin="0,5,0,0" Click="BtnCreaCamera_Click"/>
+            <ContentControl DockPanel.Dock="Bottom" Content="{Binding ElementName=Albero, Path=SelectedItem}"/>
+            <TextBlock Text="Componenti" DockPanel.Dock="Top" Style="{StaticResource Titolo}"/>
+            <TreeView x:Name="Albero" MinWidth="300" ItemTemplate="{StaticResource TemplateComponente}"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Left" Margin="0,0,5,0">
+            <Button x:Name="BtnCreaVertice" Content="Crea vertice" Padding="5,5,5,5" DockPanel.Dock="Bottom" Margin="0,5,0,0" Click="BtnCreaVertice_Click"/>
+            <TextBlock Text="Vertici" DockPanel.Dock="Top" Style="{StaticResource Titolo}"/>
+            <ListView x:Name="ListViewFacce" MinWidth="300" ItemsSource="{Binding ElementName=Albero, Path=SelectedItem.Vertici}" HorizontalContentAlignment="Stretch"/>
+        </DockPanel>
+        <DockPanel DockPanel.Dock="Left" Margin="0,0,5,0">
+            <Button x:Name="BtnCreaFaccia" Content="Crea faccia" Padding="5,5,5,5" DockPanel.Dock="Bottom" Margin="0,5,0,0" Click="BtnCreaFaccia_Click"/>
+            <TextBlock Text="Facce" DockPanel.Dock="Top" Style="{StaticResource Titolo}"/>
+            <ListView DockPanel.Dock="Left" MinWidth="300" ItemsSource="{Binding ElementName=Albero, Path=SelectedItem.Facce}" HorizontalContentAlignment="Stretch"/>
+        </DockPanel>
+        <DockPanel>
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" DockPanel.Dock="Bottom" Margin="0,5,0,0">
+                <Button x:Name="BtnRenderizza" Content="Aggiorna immagine" Padding="5,5,5,5" Margin="0,0,5,0" Width="120" Command="{StaticResource ComandoAggiorna}"/>
+                <Button x:Name="BtnSalvaImmagine" Content="Salva immagine" Padding="5,5,5,5" Margin="0,0,0,0" Width="120" Click="BtnSalvaImmagine_Click"/>
+            </StackPanel>
+            <ContentControl x:Name="ControlloCamera"  DockPanel.Dock="Bottom" HorizontalAlignment="Center" MaxWidth="360"/>
+            <TabControl x:Name="Tabbe">
+                <TabItem Header="Immagine">
+                    <Image x:Name="ImageView" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                </TabItem>
+                <TabItem Header="Z-buffer">
+                    <Image x:Name="ZBufferView" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                </TabItem>
+                <TabItem Header="Fusione">
+                    <Image x:Name="FusioneView" RenderOptions.BitmapScalingMode="NearestNeighbor"/>
+                </TabItem>
+            </TabControl>
+        </DockPanel>
+    </DockPanel>
+</Window>
